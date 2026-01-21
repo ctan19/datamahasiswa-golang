@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Mahasiswa</title>
+    <style>
+        :root {
+            --bg-color: white;
+            --text-color: #333;
+            --table-border: #000000;
+            --table-header-bg: #f2f2f2;
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --error-color: red;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --table-border: #555555;
+            --table-header-bg: #333333;
+            --button-bg: #555555;
+            --button-hover: #666666;
+            --error-color: #ff6b6b;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1 { color: var(--text-color); }
+        h2 { color: var(--text-color); }
+
+        form { margin-bottom: 20px; }
+
+        input {
+            margin: 5px;
+            padding: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--table-border);
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover { background: var(--button-hover); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-color);
+        }
+
+        th, td {
+            border: 1px solid var(--table-border);
+            padding: 8px;
+            text-align: left;
+            color: var(--text-color);
+        }
+
+        th { background-color: var(--table-header-bg); }
+
+        /* Styling untuk kolom yang sedang di-sort */
+        .sorted-column {
+            background-color: #000000; /* Background hitam */
+            color: #ffffff; /* Text putih */
+            font-weight: bold;
+        }
+
+        .error { color: var(--error-color); }
+
+        .success {
+            color: #28a745;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover { background: var(--button-hover); }
+
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 70px;
+            padding: 10px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .lang-toggle:hover { background: var(--button-hover); }
+    </style>
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButton(savedTheme);
+        }
+
+        function updateThemeButton(theme) {
+            const button = document.querySelector('.theme-toggle');
+            button.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        function confirmDelete(nim) {
+            const lang = localStorage.getItem('language') || 'id';
+            const messages = {
+                id: 'Apakah Anda yakin ingin menghapus mahasiswa dengan NIM ',
+                en: 'Are you sure you want to delete student with NIM '
+            };
+            return confirm(messages[lang] + nim + '?');
+        }
+
+        const translations = {
+            id: {
+                title: 'Data Mahasiswa',
+                name_placeholder: 'Nama',
+                nim_placeholder: 'NIM',
+                grade_placeholder: 'Nilai',
+                add_student: 'Tambah Mahasiswa',
+                student_list: 'Daftar Mahasiswa',
+                nim_header: 'NIM',
+                name_header: 'Nama',
+                grade_header: 'Nilai',
+                actions_header: 'Aksi',
+                edit: '✏️ Edit',
+                delete: '🗑️ Hapus',
+                edit_title: 'Edit Mahasiswa',
+                update_student: 'Update Mahasiswa',
+                back_to_list: 'Kembali ke Daftar Mahasiswa',
+                delete_success: 'berhasil dihapus',
+                total_students_prefix: 'Total Mahasiswa: {{.total}}'
+            },
+            en: {
+                title: 'Student Data',
+                name_placeholder: 'Name',
+                nim_placeholder: 'NIM',
+                grade_placeholder: 'Grade',
+                add_student: 'Add Student',
+                student_list: 'Student List',
+                nim_header: 'NIM',
+                name_header: 'Name',
+                grade_header: 'Grade',
+                actions_header: 'Actions',
+                edit: '✏️ Edit',
+                delete: '🗑️ Delete',
+                edit_title: 'Edit Student',
+                update_student: 'Update Student',
+                back_to_list: 'Back to Student List',
+                delete_success: 'successfully deleted',
+                total_students_prefix: 'Total Students: {{.total}}'
+            }
+        };
+
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem('language') || 'id';
+            const newLang = currentLang === 'id' ? 'en' : 'id';
+            
+            localStorage.setItem('language', newLang);
+            applyLanguage(newLang);
+            updateLangButton(newLang);
+        }
+
+        function applyLanguage(lang) {
+            const langData = translations[lang];
+            
+            // Update elements with data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (langData[key] && element.id !== 'total-students') {
+                    if (element.tagName === 'INPUT' && element.hasAttribute('data-i18n-placeholder')) {
+                        element.placeholder = langData[key];
+                    } else {
+                        element.textContent = langData[key];
+                    }
+                }
+            });
+        }
+
+        function updateLangButton(lang) {
+            const button = document.querySelector('.lang-toggle');
+            button.textContent = lang === 'id' ? 'ID' : 'EN';
+        }
+
+        function loadLanguage() {
+            const savedLang = localStorage.getItem('language') || 'id';
+            applyLanguage(savedLang);
+            updateLangButton(savedLang);
+            
+            // Tampilkan pesan sukses jika ada
+            showDeleteSuccess();
+        }
+
+        function showDeleteSuccess() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const deleted = urlParams.get('deleted');
+            const nim = urlParams.get('nim');
+            
+            if (deleted === 'true' && nim) {
+                const lang = localStorage.getItem('language') || 'id';
+                const langData = translations[lang];
+                const message = lang === 'id' 
+                    ? `Mahasiswa dengan NIM ${nim} ${langData.delete_success}`
+                    : `Student with NIM ${nim} ${langData.delete_success}`;
+                
+                const successDiv = document.getElementById('success-message');
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                
+                // Hapus parameter dari URL setelah 3 detik
+                setTimeout(() => {
+                    const url = new URL(window.location);
+                    url.searchParams.delete('deleted');
+                    url.searchParams.delete('nim');
+                    window.history.replaceState({}, '', url);
+                }, 3000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            loadLanguage();
+        });
+
+        // Also try to load language immediately in case DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                loadTheme();
+                loadLanguage();
+            });
+        } else {
+            // DOM already loaded
+            loadTheme();
+            loadLanguage();
+        }
+
+        function sortBy(column) {
+            const url = new URL(window.location);
+            const currentSortBy = url.searchParams.get('sort_by');
+            const currentOrder = url.searchParams.get('order') || 'asc';
+            
+            let newOrder = 'asc';
+            if (currentSortBy === column && currentOrder === 'asc') {
+                newOrder = 'desc';  // Toggle ke descending jika kolom sama
+            }
+            
+            url.searchParams.set('sort_by', column);
+            url.searchParams.set('order', newOrder);
+            
+            window.location.href = url.toString();  // Reload halaman dengan sorting baru
+        }
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>
+    <button class="lang-toggle" onclick="toggleLanguage()" title="Toggle Language">🇮🇩</button>
+    <h1 data-i18n="title">Data Mahasiswa</h1>
+    {{if .error}}
+        <p class="error">{{.error}}</p>
+    {{end}}
+    <div id="success-message" class="success" style="display: none;"></div>
+    <form action="/add" method="post">
+        <input type="text" name="nama" data-i18n-placeholder="name_placeholder" placeholder="Nama" required>
+        <input type="text" name="nim" data-i18n-placeholder="nim_placeholder" placeholder="NIM" required>
+        <input type="number" step="0.01" name="nilai" data-i18n-placeholder="grade_placeholder" placeholder="Nilai" required>
+        <button type="submit" data-i18n="add_student">Tambah Mahasiswa</button>
+    </form>
+    <h2 data-i18n="student_list">Daftar Mahasiswa</h2>
+    <table>
+        <thead>
+            <tr>
+                <th><a href="#" onclick="sortBy('nim')" data-i18n="nim_header">NIM</a> {{if eq .sort_by "nim"}}{{if eq .order "asc"}}↑{{else}}↓{{end}}{{end}}</th>
+                <th><a href="#" onclick="sortBy('nama')" data-i18n="name_header">Nama</a> {{if eq .sort_by "nama"}}{{if eq .order "asc"}}↑{{else}}↓{{end}}{{end}}</th>
+                <th><a href="#" onclick="sortBy('nilai')" data-i18n="grade_header">Nilai</a> {{if eq .sort_by "nilai"}}{{if eq .order "asc"}}↑{{else}}↓{{end}}{{end}}</th>
+                <th data-i18n="actions_header">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .mahasiswa}}
+                <tr>
+                    <td>{{.NIM}}</td>
+                    <td>{{.Nama}}</td>
+                    <td>{{.Nilai}}</td>
+                    <td>
+                        <a href="/edit/{{.ID}}" style="margin-right: 10px;" data-i18n="edit">✏️ Edit</a>
+                        <form action="/delete" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="{{.ID}}">
+                            <button type="submit" onclick="return confirmDelete('{{.NIM}}')" data-i18n="delete">🗑️ Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+    <p id, en="total-students" data-i18n="total_students_prefix">Total Mahasiswa: {{.total}}</p>
+</body>
+</html>

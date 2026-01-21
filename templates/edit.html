@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Mahasiswa</title>
+    <style>
+        :root {
+            --bg-color: white;
+            --text-color: #333;
+            --table-border: #000000;
+            --table-header-bg: #f2f2f2;
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+            --error-color: red;
+            --link-color: #007BFF;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --table-border: #555555;
+            --table-header-bg: #333333;
+            --button-bg: #555555;
+            --button-hover: #666666;
+            --error-color: #ff6b6b;
+            --link-color: #4da6ff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1 { color: var(--text-color); }
+
+        form { margin-bottom: 20px; }
+
+        input {
+            margin: 5px;
+            padding: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--table-border);
+        }
+
+        button {
+            padding: 8px 16px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover { background: var(--button-hover); }
+
+        .error { color: var(--error-color); }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover { text-decoration: underline; }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover { background: var(--button-hover); }
+
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 70px;
+            padding: 10px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .lang-toggle:hover { background: var(--button-hover); }
+    </style>
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        const translations = {
+            id: {
+                edit_title: 'Edit Mahasiswa',
+                name_placeholder: 'Nama',
+                nim_placeholder: 'NIM',
+                grade_placeholder: 'Nilai',
+                update_student: 'Update Mahasiswa',
+                back_to_list: 'Kembali ke Daftar Mahasiswa'
+            },
+            en: {
+                edit_title: 'Edit Student',
+                name_placeholder: 'Name',
+                nim_placeholder: 'NIM',
+                grade_placeholder: 'Grade',
+                update_student: 'Update Student',
+                back_to_list: 'Back to Student List'
+            }
+        };
+
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem('language') || 'id';
+            const newLang = currentLang === 'id' ? 'en' : 'id';
+            
+            localStorage.setItem('language', newLang);
+            applyLanguage(newLang);
+            updateLangButton(newLang);
+        }
+
+        function applyLanguage(lang) {
+            const langData = translations[lang];
+            
+            // Update elements with data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (langData[key]) {
+                    if (element.tagName === 'INPUT' && element.hasAttribute('data-i18n-placeholder')) {
+                        element.placeholder = langData[key];
+                    } else {
+                        element.textContent = langData[key];
+                    }
+                }
+            });
+        }
+
+        function updateLangButton(lang) {
+            const button = document.querySelector('.lang-toggle');
+            button.textContent = lang === 'id' ? 'ID' : 'EN';
+        }
+
+        function loadLanguage() {
+            const savedLang = localStorage.getItem('language') || 'id';
+            applyLanguage(savedLang);
+            updateLangButton(savedLang);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            loadLanguage();
+        });
+        function sortBy(column) {
+    const url = new URL(window.location);
+    const currentSortBy = url.searchParams.get('sort_by');
+    const currentOrder = url.searchParams.get('order') || 'asc';
+    
+    let newOrder = 'asc';
+    if (currentSortBy === column && currentOrder === 'asc') {
+        newOrder = 'desc';  // Toggle ke descending jika kolom sama
+    }
+    
+    url.searchParams.set('sort_by', column);
+    url.searchParams.set('order', newOrder);
+    
+    window.location.href = url.toString();  // Reload halaman dengan sorting baru
+}
+        
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+    <button class="lang-toggle" onclick="toggleLanguage()" title="Toggle Language">🇮🇩</button>
+    <h1 data-i18n="edit_title">Edit Mahasiswa</h1>
+    {{if .error}}
+        <p class="error">{{.error}}</p>
+    {{end}}
+    {{if .success}}
+        <p style="color: green;">Data berhasil diubah!</p>
+    {{end}}
+    <form action="/edit" method="post">
+        <input type="hidden" name="id" value="{{.mahasiswa.ID}}">
+        <input type="text" name="nama" data-i18n-placeholder="name_placeholder" placeholder="Nama" value="{{.mahasiswa.Nama}}" required>
+        <input type="text" name="nim" data-i18n-placeholder="nim_placeholder" placeholder="NIM" value="{{.mahasiswa.NIM}}" required>
+        <input type="number" step="0.01" name="nilai" data-i18n-placeholder="grade_placeholder" placeholder="Nilai" value="{{.mahasiswa.Nilai}}" required>
+        <button type="submit" data-i18n="update_student">Update Mahasiswa</button>
+    </form>
+    <a href="/" data-i18n="back_to_list">Kembali ke Daftar Mahasiswa</a>
+</body>
+</html>
