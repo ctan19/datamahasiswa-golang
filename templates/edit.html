@@ -126,7 +126,8 @@
                 nim_placeholder: 'NIM',
                 grade_placeholder: 'Nilai',
                 update_student: 'Update Mahasiswa',
-                back_to_list: 'Kembali ke Daftar Mahasiswa'
+                back_to_list: 'Kembali ke Daftar Mahasiswa',
+                update_success: 'Data berhasil diubah!'
             },
             en: {
                 edit_title: 'Edit Student',
@@ -134,7 +135,8 @@
                 nim_placeholder: 'NIM',
                 grade_placeholder: 'Grade',
                 update_student: 'Update Student',
-                back_to_list: 'Back to Student List'
+                back_to_list: 'Back to Student List',
+                update_success: 'Data successfully updated!'
             }
         };
 
@@ -178,22 +180,6 @@
             loadTheme();
             loadLanguage();
         });
-        function sortBy(column) {
-    const url = new URL(window.location);
-    const currentSortBy = url.searchParams.get('sort_by');
-    const currentOrder = url.searchParams.get('order') || 'asc';
-    
-    let newOrder = 'asc';
-    if (currentSortBy === column && currentOrder === 'asc') {
-        newOrder = 'desc';  // Toggle ke descending jika kolom sama
-    }
-    
-    url.searchParams.set('sort_by', column);
-    url.searchParams.set('order', newOrder);
-    
-    window.location.href = url.toString();  // Reload halaman dengan sorting baru
-}
-        
     </script>
 </head>
 <body>
@@ -204,7 +190,7 @@
         <p class="error">{{.error}}</p>
     {{end}}
     {{if .success}}
-        <p style="color: green;">Data berhasil diubah!</p>
+        <p style="color: green;" data-i18n="update_success">Data berhasil diubah!</p>
     {{end}}
     <form action="/edit" method="post">
         <input type="hidden" name="id" value="{{.mahasiswa.ID}}">

@@ -107,7 +107,10 @@ func editPageHandler(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "edit.html", gin.H{"mahasiswa": mahasiswa})
+	// Cek query parameter untuk pesan sukses
+	success := c.Query("success") == "true"
+
+	c.HTML(http.StatusOK, "edit.html", gin.H{"mahasiswa": mahasiswa, "success": success})
 }
 
 func updateHandler(c *gin.Context, db *sql.DB) {
@@ -136,5 +139,13 @@ func updateHandler(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/")
+	// Ambil data mahasiswa yang telah diupdate
+	mahasiswa, err := getMahasiswaByID(db, id)
+	if err != nil {
+		// Jika gagal ambil data, redirect ke halaman utama
+		c.Redirect(http.StatusFound, "/")
+		return
+	}
+
+	c.HTML(http.StatusOK, "edit.html", gin.H{"mahasiswa": mahasiswa, "success": true})
 }

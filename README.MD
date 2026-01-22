@@ -9,8 +9,9 @@ Aplikasi web sederhana untuk mengelola data mahasiswa menggunakan Go dan Gin fra
 - ✅ **Lihat Data**: Menampilkan daftar semua mahasiswa dalam tabel
 - ✅ **Edit Mahasiswa**: Mengedit data mahasiswa yang sudah ada
 - ✅ **Hapus Mahasiswa**: Menghapus data mahasiswa dengan konfirmasi
-- ✅ **Dark/Light Mode**: Toggle tema tampilan sesuai preferensi
+- ✅ **Dark/Light Mode**: tampilan tema sesuai preferensi
 - ✅ **Responsive Design**: Tampilan yang responsif di berbagai perangkat
+- ✅ **Dua bahasa**: Tersedia bahasa Inggris dan bahasa Indonesia
 
 ## Prasyarat
 
@@ -63,6 +64,7 @@ Sebelum menjalankan aplikasi ini, pastikan Anda memiliki:
 - **Edit**: Klik "Edit" pada kolom Aksi untuk mengedit data
 - **Hapus**: Klik "Hapus" pada kolom Aksi untuk menghapus data (dengan konfirmasi)
 - **Toggle Tema**: Klik tombol 🌙 di kanan atas untuk mengganti dark/light mode
+- **Bahasa**: Klik tombol ID/EN di kanan atas untuk mengganti bahasa
 
 ### Halaman Edit
 - Form edit akan terbuka dengan data mahasiswa sudah terisi
