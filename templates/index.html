@@ -176,7 +176,10 @@
                 update_student: 'Update Mahasiswa',
                 back_to_list: 'Kembali ke Daftar Mahasiswa',
                 delete_success: 'berhasil dihapus',
-                total_students_prefix: 'Total Mahasiswa: {{.total}}'
+                total_students_prefix: 'Total Mahasiswa: {{.total}}',
+                search_placeholder: 'Cari berdasarkan NIM atau Nama',
+                search_button: '🔍 Cari',
+                clear_search: '❌ Hapus Pencarian'
             },
             en: {
                 title: 'Student Data',
@@ -195,7 +198,10 @@
                 update_student: 'Update Student',
                 back_to_list: 'Back to Student List',
                 delete_success: 'successfully deleted',
-                total_students_prefix: 'Total Students: {{.total}}'
+                total_students_prefix: 'Total Students: {{.total}}',
+                search_placeholder: 'Search by NIM or Name',
+                search_button: '🔍 Search',
+                clear_search: '❌ Clear Search'
             }
         };
 
@@ -208,21 +214,60 @@
             updateLangButton(newLang);
         }
 
-        function applyLanguage(lang) {
-            const langData = translations[lang];
-            
-            // Update elements with data-i18n
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (langData[key] && element.id !== 'total-students') {
-                    if (element.tagName === 'INPUT' && element.hasAttribute('data-i18n-placeholder')) {
-                        element.placeholder = langData[key];
-                    } else {
-                        element.textContent = langData[key];
-                    }
-                }
-            });
+        function cacheOriginalText() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                if (!el.dataset.originalText) {
+                    el.dataset.originalText = el.textContent;
         }
+    });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                if (!el.dataset.originalPlaceholder) {
+                    el.dataset.originalPlaceholder = el.placeholder || '';
+        }
+    });
+}
+        function applyLanguage(lang) {
+  const langData = translations[lang] || translations.id;
+
+  // TEXT
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+
+    if (langData[key]) {
+      el.textContent = langData[key];
+    } else if (el.dataset.originalText) {
+      el.textContent = el.dataset.originalText;
+    }
+  });
+
+  // PLACEHOLDER
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+
+    if (langData[key]) {
+      el.placeholder = langData[key];
+    } else if (el.dataset.originalPlaceholder) {
+      el.placeholder = el.dataset.originalPlaceholder;
+    }
+  });
+
+  // Search form elements without data-i18n attributes.
+  const searchForm = document.querySelector('form[action="/"]');
+  if (searchForm) {
+    const searchInput = searchForm.querySelector('input[name="search"]');
+    if (searchInput && langData.search_placeholder) {
+      searchInput.placeholder = langData.search_placeholder;
+    }
+    const searchButton = searchForm.querySelector('button[type="submit"]');
+    if (searchButton && langData.search_button) {
+      searchButton.textContent = langData.search_button;
+    }
+    const clearLink = searchForm.querySelector('a');
+    if (clearLink && langData.clear_search) {
+      clearLink.textContent = langData.clear_search;
+    }
+  }
+}
 
         function updateLangButton(lang) {
             const button = document.querySelector('.lang-toggle');
@@ -265,6 +310,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            cacheOriginalText();
             loadTheme();
             loadLanguage();
         });
@@ -312,7 +358,13 @@
         <input type="number" step="0.01" name="nilai" data-i18n-placeholder="grade_placeholder" placeholder="Nilai" required>
         <button type="submit" data-i18n="add_student">Tambah Mahasiswa</button>
     </form>
+    
     <h2 data-i18n="student_list">Daftar Mahasiswa</h2>
+    <form action="/" method="get" style="margin-bottom: 20px;">
+        <input type="text" name="search" value="{{.search}}" placeholder="Cari berdasarkan NIM atau Nama" style="width: 300px; padding: 8px;">
+        <button type="submit">🔍 Cari</button>
+        {{if .search}}<a href="/" style="margin-left: 10px;">❌ Hapus Pencarian</a>{{end}}
+    </form>
     <table>
         <thead>
             <tr>
@@ -339,6 +391,6 @@
             {{end}}
         </tbody>
     </table>
-    <p id, en="total-students" data-i18n="total_students_prefix">Total Mahasiswa: {{.total}}</p>
+    <p id="total-students" data-i18n="total_students_prefix">Total Mahasiswa: {{.total}}</p>
 </body>
 </html>

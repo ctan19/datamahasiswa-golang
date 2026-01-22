@@ -12,6 +12,7 @@ Aplikasi web sederhana untuk mengelola data mahasiswa menggunakan Go dan Gin fra
 - ✅ **Dark/Light Mode**: tampilan tema sesuai preferensi
 - ✅ **Responsive Design**: Tampilan yang responsif di berbagai perangkat
 - ✅ **Dua bahasa**: Tersedia bahasa Inggris dan bahasa Indonesia
+- ✅ **Cari Mahasiswa**: Mencari data mahasiswa berdasarkan NIM atau Nama
 
 ## Prasyarat
 
@@ -65,6 +66,7 @@ Sebelum menjalankan aplikasi ini, pastikan Anda memiliki:
 - **Hapus**: Klik "Hapus" pada kolom Aksi untuk menghapus data (dengan konfirmasi)
 - **Toggle Tema**: Klik tombol 🌙 di kanan atas untuk mengganti dark/light mode
 - **Bahasa**: Klik tombol ID/EN di kanan atas untuk mengganti bahasa
+- **Pencarian**: Masukkan NIM atau Nama dan klik "Cari" untuk mencari data
 
 ### Halaman Edit
 - Form edit akan terbuka dengan data mahasiswa sudah terisi

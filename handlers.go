@@ -13,7 +13,20 @@ func indexHandler(c *gin.Context, db *sql.DB) {
 	sortBy := c.DefaultQuery("sort_by", "id") // Default: sort by ID
 	order := c.DefaultQuery("order", "asc")   // Default: ascending
 
-	mahasiswa, err := getMahasiswaSorted(db, sortBy, order)
+	// Ambil parameter pencarian
+	searchQuery := c.Query("search")
+
+	var mahasiswa []Mahasiswa
+	var err error
+
+	if searchQuery != "" {
+		// Jika ada query pencarian, gunakan fungsi pencarian
+		mahasiswa, err = searchMahasiswa(db, searchQuery)
+	} else {
+		// Jika tidak ada pencarian, gunakan sorting biasa
+		mahasiswa, err = getMahasiswaSorted(db, sortBy, order)
+	}
+
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "index.html", gin.H{"error": err.Error(), "mahasiswa": []Mahasiswa{}, "total": 0})
 		return
@@ -34,6 +47,7 @@ func indexHandler(c *gin.Context, db *sql.DB) {
 		"total":       total,
 		"sort_by":     sortBy, // Kirim info sorting ke template
 		"order":       order,
+		"search":      searchQuery, // Kirim query pencarian ke template
 	})
 }
 

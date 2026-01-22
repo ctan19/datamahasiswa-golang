@@ -137,3 +137,21 @@ func getMahasiswaByID(db *sql.DB, id int) (*Mahasiswa, error) {
 	}
 	return &m, nil
 }
+
+func searchMahasiswa(db *sql.DB, query string) ([]Mahasiswa, error) {
+	rows, err := db.Query(`SELECT id, nim, nama, nilai FROM mahasiswa WHERE nim = $1 OR nama ILIKE $2 ORDER BY id`, query, "%"+query+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var mahasiswa []Mahasiswa
+	for rows.Next() {
+		var m Mahasiswa
+		if err := rows.Scan(&m.ID, &m.NIM, &m.Nama, &m.Nilai); err != nil {
+			return nil, err
+		}
+		mahasiswa = append(mahasiswa, m)
+	}
+	return mahasiswa, nil
+}
