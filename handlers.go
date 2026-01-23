@@ -15,13 +15,24 @@ func indexHandler(c *gin.Context, db *sql.DB) {
 
 	// Ambil parameter pencarian
 	searchQuery := c.Query("search")
+	minNilaiStr := c.Query("min_nilai")
+	var minNilai *float64
+	if minNilaiStr != "" {
+		parsedNilai, err := strconv.ParseFloat(minNilaiStr, 64)
+		if err != nil {
+			mahasiswa, _ := getMahasiswa(db)
+			c.HTML(http.StatusBadRequest, "index.html", gin.H{"error": "Nilai harus angka", "mahasiswa": mahasiswa})
+			return
+		}
+		minNilai = &parsedNilai
+	}
 
 	var mahasiswa []Mahasiswa
 	var err error
 
-	if searchQuery != "" {
+	if searchQuery != "" || minNilai != nil {
 		// Jika ada query pencarian, gunakan fungsi pencarian
-		mahasiswa, err = searchMahasiswa(db, searchQuery)
+		mahasiswa, err = searchMahasiswaAdvanced(db, searchQuery, minNilai)
 	} else {
 		// Jika tidak ada pencarian, gunakan sorting biasa
 		mahasiswa, err = getMahasiswaSorted(db, sortBy, order)
@@ -47,7 +58,8 @@ func indexHandler(c *gin.Context, db *sql.DB) {
 		"total":       total,
 		"sort_by":     sortBy, // Kirim info sorting ke template
 		"order":       order,
-		"search":      searchQuery, // Kirim query pencarian ke template
+		"search_text": searchQuery,
+		"min_nilai":   minNilaiStr,
 	})
 }
 
@@ -60,6 +72,11 @@ func addHandler(c *gin.Context, db *sql.DB) {
 		// Jika error parsing nilai, tetap tampilkan data mahasiswa yang ada
 		mahasiswa, _ := getMahasiswa(db)
 		c.HTML(http.StatusBadRequest, "index.html", gin.H{"error": "Nilai harus angka", "mahasiswa": mahasiswa})
+		return
+	}
+	if nilai > 4 {
+		mahasiswa, _ := getMahasiswa(db)
+		c.HTML(http.StatusBadRequest, "index.html", gin.H{"error": "Nilai IPK maksimal 4", "mahasiswa": mahasiswa})
 		return
 	}
 
@@ -143,6 +160,10 @@ func updateHandler(c *gin.Context, db *sql.DB) {
 		// Jika error parsing nilai, tetap tampilkan data mahasiswa yang ada
 		mahasiswa, _ := getMahasiswa(db)
 		c.HTML(http.StatusBadRequest, "index.html", gin.H{"error": "Nilai harus angka", "mahasiswa": mahasiswa})
+		return
+	}
+	if nilai > 4 {
+		c.HTML(http.StatusBadRequest, "edit.html", gin.H{"error": "Nilai IPK maksimal 4", "mahasiswa": &Mahasiswa{ID: id, Nama: nama, NIM: nim, Nilai: nilai}})
 		return
 	}
 

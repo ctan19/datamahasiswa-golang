@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -138,8 +139,34 @@ func getMahasiswaByID(db *sql.DB, id int) (*Mahasiswa, error) {
 	return &m, nil
 }
 
-func searchMahasiswa(db *sql.DB, query string) ([]Mahasiswa, error) {
-	rows, err := db.Query(`SELECT id, nim, nama, nilai FROM mahasiswa WHERE nim = $1 OR nama ILIKE $2 ORDER BY id`, query, "%"+query+"%")
+func searchMahasiswaAdvanced(db *sql.DB, query string, minNilai *float64) ([]Mahasiswa, error) {
+	q := strings.TrimSpace(query)
+	hasQuery := q != ""
+	hasMinNilai := minNilai != nil
+
+	if !hasQuery && !hasMinNilai {
+		return []Mahasiswa{}, nil
+	}
+
+	base := `SELECT id, nim, nama, nilai FROM mahasiswa`
+	var clauses []string
+	var args []interface{}
+
+	if hasQuery {
+		i1 := len(args) + 1
+		i2 := len(args) + 2
+		clauses = append(clauses, fmt.Sprintf("(nim = $%d OR nama ILIKE $%d)", i1, i2))
+		args = append(args, q, "%"+q+"%")
+	}
+
+	if hasMinNilai {
+		i := len(args) + 1
+		clauses = append(clauses, fmt.Sprintf("nilai > $%d", i))
+		args = append(args, *minNilai)
+	}
+
+	querySQL := base + " WHERE " + strings.Join(clauses, " AND ") + " ORDER BY id"
+	rows, err := db.Query(querySQL, args...)
 	if err != nil {
 		return nil, err
 	}

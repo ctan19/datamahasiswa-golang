@@ -6,103 +6,113 @@
     <title>Edit Mahasiswa</title>
     <style>
         :root {
-            --bg-color: white;
-            --text-color: #333;
-            --table-border: #000000;
-            --table-header-bg: #f2f2f2;
-            --button-bg: #4CAF50;
-            --button-hover: #45a049;
-            --error-color: red;
-            --link-color: #007BFF;
+            --bg-color: #f7f7f5;
+            --text-color: #111111;
+            --muted-text: #666666;
+            --table-border: #e5e5e5;
+            --table-header-bg: #f0f0ee;
+            --button-bg: #1b8301;
+            --button-hover: #222222;
+            --error-color: #b00020;
+            --card-bg: #ffffff;
+            --focus-ring: #111111;
         }
 
         [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #ffffff;
-            --table-border: #555555;
-            --table-header-bg: #333333;
-            --button-bg: #555555;
-            --button-hover: #666666;
+            --bg-color: #0f0f0f;
+            --text-color: #f5f5f5;
+            --muted-text: #b3b3b3;
+            --table-border: #2a2a2a;
+            --table-header-bg: #1a1a1a;
+            --button-bg: #f5f5f5;
+            --button-hover: #dddddd;
             --error-color: #ff6b6b;
-            --link-color: #4da6ff;
+            --card-bg: #151515;
+            --focus-ring: #f5f5f5;
         }
 
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+            margin: 32px auto;
+            padding: 0 16px;
+            max-width: 1000px;
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s, color 0.3s;
         }
 
-        h1 { color: var(--text-color); }
+        h1 {
+            color: var(--text-color);
+            letter-spacing: 0.2px;
+            margin: 0 0 12px 0;
+        }
 
-        form { margin-bottom: 20px; }
+        form { margin-bottom: 18px; }
 
         input {
-            margin: 5px;
-            padding: 8px;
-            background-color: var(--bg-color);
+            margin: 6px 6px 6px 0;
+            padding: 10px 12px;
+            background-color: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--table-border);
+            border-radius: 6px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--focus-ring);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
         }
 
         button {
-            padding: 8px 16px;
+            padding: 10px 14px;
             background: var(--button-bg);
-            color: var(--text-color);
-            border: none;
+            color: var(--bg-color);
+            border: 1px solid var(--button-bg);
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s, border-color 0.2s;
         }
 
-        button:hover { background: var(--button-hover); }
+        button:hover {
+            background: var(--button-hover);
+            border-color: var(--button-hover);
+        }
 
         .error { color: var(--error-color); }
 
         a {
-            color: var(--link-color);
-            text-decoration: none;
-        }
-
-        a:hover { text-decoration: underline; }
-
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px;
-            background: var(--button-bg);
             color: var(--text-color);
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-            transition: background-color 0.3s;
+            text-decoration: none;
+            border-bottom: 1px solid var(--table-border);
         }
 
-        .theme-toggle:hover { background: var(--button-hover); }
+        a:hover { border-bottom-color: var(--text-color); }
 
+        .theme-toggle,
         .lang-toggle {
             position: fixed;
             top: 20px;
-            right: 70px;
-            padding: 10px;
-            background: var(--button-bg);
+            padding: 8px;
+            background: var(--card-bg);
             color: var(--text-color);
-            border: none;
+            border: 1px solid var(--table-border);
             border-radius: 50%;
             cursor: pointer;
-            width: 50px;
-            height: 50px;
-            font-size: 14px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            transition: background-color 0.2s, border-color 0.2s;
         }
 
-        .lang-toggle:hover { background: var(--button-hover); }
+        .theme-toggle { right: 20px; }
+        .lang-toggle { right: 70px; font-size: 12px; font-weight: 600; }
+
+        .theme-toggle:hover,
+        .lang-toggle:hover {
+            background: var(--table-header-bg);
+            border-color: var(--table-header-bg);
+        }
     </style>
     <script>
         function toggleTheme() {
@@ -196,7 +206,7 @@
         <input type="hidden" name="id" value="{{.mahasiswa.ID}}">
         <input type="text" name="nama" data-i18n-placeholder="name_placeholder" placeholder="Nama" value="{{.mahasiswa.Nama}}" required>
         <input type="text" name="nim" data-i18n-placeholder="nim_placeholder" placeholder="NIM" value="{{.mahasiswa.NIM}}" required>
-        <input type="number" step="0.01" name="nilai" data-i18n-placeholder="grade_placeholder" placeholder="Nilai" value="{{.mahasiswa.Nilai}}" required>
+        <input type="number" step="0.01" min="0" max="4" name="nilai" data-i18n-placeholder="grade_placeholder" placeholder="Nilai" value="{{.mahasiswa.Nilai}}" required>
         <button type="submit" data-i18n="update_student">Update Mahasiswa</button>
     </form>
     <a href="/" data-i18n="back_to_list">Kembali ke Daftar Mahasiswa</a>
