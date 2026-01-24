@@ -32,7 +32,7 @@ func indexHandler(c *gin.Context, db *sql.DB) {
 
 	if searchQuery != "" || minNilai != nil {
 		// Jika ada query pencarian, gunakan fungsi pencarian
-		mahasiswa, err = searchMahasiswaAdvanced(db, searchQuery, minNilai)
+		mahasiswa, err = searchMahasiswa(db, searchQuery, minNilai)
 	} else {
 		// Jika tidak ada pencarian, gunakan sorting biasa
 		mahasiswa, err = getMahasiswaSorted(db, sortBy, order)

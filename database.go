@@ -139,7 +139,7 @@ func getMahasiswaByID(db *sql.DB, id int) (*Mahasiswa, error) {
 	return &m, nil
 }
 
-func searchMahasiswaAdvanced(db *sql.DB, query string, minNilai *float64) ([]Mahasiswa, error) {
+func searchMahasiswa(db *sql.DB, query string, minNilai *float64) ([]Mahasiswa, error) {
 	q := strings.TrimSpace(query)
 	hasQuery := q != ""
 	hasMinNilai := minNilai != nil

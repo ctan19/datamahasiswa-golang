@@ -370,8 +370,8 @@
     </script>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">â˜€ï¸</button>
-    <button class="lang-toggle" onclick="toggleLanguage()" title="Toggle Language">ðŸ‡®ðŸ‡©</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode"></button>
+    <button class="lang-toggle" onclick="toggleLanguage()" title="Toggle Language"></button>
     <h1 data-i18n="title">Data Mahasiswa</h1>
     {{if .error}}
         <p class="error">{{.error}}</p>
@@ -407,10 +407,10 @@
                     <td>{{.Nama}}</td>
                     <td>{{.Nilai}}</td>
                     <td>
-                        <a href="/edit/{{.ID}}" style="margin-right: 10px;" data-i18n="edit">âœï¸ Edit</a>
+                        <a href="/edit/{{.ID}}" style="margin-right: 10px;" data-i18n="edit">Edit</a>
                         <form action="/delete" method="post" style="display:inline;">
                             <input type="hidden" name="id" value="{{.ID}}">
-                            <button type="submit" onclick="return confirmDelete('{{.NIM}}')" data-i18n="delete">ðŸ—‘ï¸ Hapus</button>
+                            <button type="submit" onclick="return confirmDelete('{{.NIM}}')" data-i18n="delete">Hapus</button>
                         </form>
                     </td>
                 </tr>
